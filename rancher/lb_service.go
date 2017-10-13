@@ -2,10 +2,12 @@ package rancher
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 
+	"github.com/Sirupsen/logrus"
 	legacyClient "github.com/rancher/go-rancher/client"
 	"github.com/rancher/go-rancher/v2"
 	"github.com/rancher/rancher-compose-executor/config"
@@ -13,9 +15,10 @@ import (
 
 func populateLbFields(r *RancherService, launchConfig *client.LaunchConfig, service *CompositeService) error {
 	serviceType := FindServiceType(r)
-
+	logrus.Infof("Hello %s", r.name)
 	config := r.serviceConfig
 	if serviceType == RancherType && config.LbConfig != nil {
+		logrus.Infof("Hello Entered RancherType")
 		service.LbConfig = &client.LbTargetConfig{}
 		service.LbConfig.PortRules = []client.TargetPortRule{}
 		for _, portRule := range config.LbConfig.PortRules {
@@ -33,6 +36,7 @@ func populateLbFields(r *RancherService, launchConfig *client.LaunchConfig, serv
 	launchConfig.Expose = r.serviceConfig.Expose
 
 	if serviceType == LegacyLbServiceType {
+		logrus.Infof("Hello entered legacylbservice")
 		existingHAProxyConfig := ""
 		var legacyStickinessPolicy *legacyClient.LoadBalancerCookieStickinessPolicy
 		if config.LegacyLoadBalancerConfig != nil {
@@ -66,11 +70,17 @@ func populateLbFields(r *RancherService, launchConfig *client.LaunchConfig, serv
 		labelName := "io.rancher.service.selector.link"
 		if label, ok := r.serviceConfig.Labels[labelName]; ok {
 			selectorPortRules, err := convertLb(r.serviceConfig.Ports, nil, nil, label)
+			ans, _ := json.Marshal(selectorPortRules)
+			logrus.Infof("Hello PortRules")
+			logrus.Infof(string(ans))
 			if err != nil {
 				return err
 			}
 			portRules = append(portRules, selectorPortRules...)
 			selectorExposeRules, err := convertLb(r.serviceConfig.Expose, nil, nil, label)
+			ans1, _ := json.Marshal(selectorExposeRules)
+			logrus.Infof("Hello ExposePortRules")
+			logrus.Infof(string(ans1))
 			if err != nil {
 				return err
 			}
@@ -168,6 +178,7 @@ frontend %s
 				Mode:     stickinessPolicy.Mode,
 			}
 		}
+		logrus.Infof("Bye entered the correct type %v", LbServiceType)
 		for _, portRule := range config.LbConfig.PortRules {
 			finalPortRule := client.PortRule{
 				SourcePort:  int64(portRule.SourcePort),
@@ -178,7 +189,12 @@ frontend %s
 				Priority:    int64(portRule.Priority),
 				BackendName: portRule.BackendName,
 				Selector:    portRule.Selector,
+				Region:      portRule.Region,
+				Environment: portRule.Environment,
 			}
+			logrus.Infof("Created a finalPortRule")
+			ans, _ := json.Marshal(finalPortRule)
+			logrus.Info(string(ans))
 
 			if portRule.Service != "" {
 				targetService, err := r.FindExisting(portRule.Service)

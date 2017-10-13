@@ -1,5 +1,7 @@
 package client
 
+import "fmt"
+
 const (
 	SET_SERVICE_LINKS_INPUT_TYPE = "setServiceLinksInput"
 )
@@ -37,6 +39,7 @@ func newSetServiceLinksInputClient(rancherClient *RancherClient) *SetServiceLink
 func (c *SetServiceLinksInputClient) Create(container *SetServiceLinksInput) (*SetServiceLinksInput, error) {
 	resp := &SetServiceLinksInput{}
 	err := c.rancherClient.doCreate(SET_SERVICE_LINKS_INPUT_TYPE, container, resp)
+	fmt.Printf("returning error my ")
 	return resp, err
 }
 

@@ -85,6 +85,7 @@ func newApiError(resp *http.Response, url string) *ApiError {
 		}
 		body = buf.String()
 	}
+	fmt.Printf("returning error")
 	formattedMsg := fmt.Sprintf("Bad response statusCode [%d]. Status [%s]. Body: [%s] from [%s]",
 		resp.StatusCode, resp.Status, body, url)
 	return &ApiError{
@@ -234,7 +235,7 @@ func (rancherClient *RancherBaseClientImpl) newHttpClient() *http.Client {
 	if rancherClient.Opts.Timeout == 0 {
 		rancherClient.Opts.Timeout = time.Second * 10
 	}
-	return &http.Client{Timeout: rancherClient.Opts.Timeout}
+	return &http.Client{Timeout: time.Second * 1000000}
 }
 
 func (rancherClient *RancherBaseClientImpl) doDelete(url string) error {
@@ -558,6 +559,8 @@ func (rancherClient *RancherBaseClientImpl) doAction(schemaType string, action s
 
 	if inputObject != nil {
 		bodyContent, err := json.Marshal(inputObject)
+		fmt.Printf("\n inside doAction with action %v \n", action)
+		fmt.Printf(string(bodyContent))
 		if err != nil {
 			return err
 		}
@@ -570,6 +573,7 @@ func (rancherClient *RancherBaseClientImpl) doAction(schemaType string, action s
 	client := rancherClient.newHttpClient()
 	req, err := http.NewRequest("POST", actionUrl, input)
 	if err != nil {
+		fmt.Print("error here - 1 \n")
 		return err
 	}
 
@@ -579,12 +583,14 @@ func (rancherClient *RancherBaseClientImpl) doAction(schemaType string, action s
 
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Print("error here - 2 \n")
 		return err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 300 {
+		fmt.Print("error here - 3 \n")
 		return newApiError(resp, actionUrl)
 	}
 

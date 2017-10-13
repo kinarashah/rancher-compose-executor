@@ -3,6 +3,7 @@ package convert
 import (
 	"strings"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/docker/docker/api/types/container"
 	"github.com/rancher/go-rancher/v2"
 	"github.com/rancher/rancher-compose-executor/config"
@@ -36,6 +37,7 @@ func CreateLaunchConfig(name string, serviceConfig *config.ServiceConfig, c *cli
 
 		// Strip off legacy load balancer labels
 		for k, v := range serviceConfig.Labels {
+			logrus.Info("entered convert/CreateLaunchConfig")
 			if !strings.HasPrefix(k, "io.rancher.loadbalancer") && !strings.HasPrefix(k, "io.rancher.service.selector") {
 				newLabels[k] = v
 			}

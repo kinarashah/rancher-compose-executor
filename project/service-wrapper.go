@@ -1,6 +1,7 @@
 package project
 
 import (
+	"strings"
 	"sync"
 
 	log "github.com/Sirupsen/logrus"
@@ -65,7 +66,7 @@ func (s *serviceWrapper) waitForDeps(wrappers map[string]*serviceWrapper) bool {
 	}
 
 	for _, dep := range s.service.DependentServices() {
-		if s.ignored[dep.Target] {
+		if s.ignored[dep.Target] || strings.Contains(dep.Target, "/") {
 			continue
 		}
 
@@ -76,7 +77,7 @@ func (s *serviceWrapper) waitForDeps(wrappers map[string]*serviceWrapper) bool {
 				return false
 			}
 		} else {
-			log.Errorf("Failed to find %s", dep.Target)
+			log.Errorf("Failed HELLO to find %s", dep.Target)
 		}
 	}
 

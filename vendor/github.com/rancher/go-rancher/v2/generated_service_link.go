@@ -12,6 +12,8 @@ type ServiceLink struct {
 	ServiceId string `json:"serviceId,omitempty" yaml:"service_id,omitempty"`
 
 	Uuid string `json:"uuid,omitempty" yaml:"uuid,omitempty"`
+
+	Service string `json:"service, omitempty" yaml:"service,omitempty"`
 }
 
 type ServiceLinkCollection struct {

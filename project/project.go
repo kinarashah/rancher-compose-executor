@@ -104,6 +104,7 @@ func (p *Project) Parse() error {
 }
 
 func (p *Project) CreateService(name string) (Service, error) {
+	fmt.Printf("Z CreateService", name)
 	factory := p.context.ServiceFactory
 	existing, ok := p.ServiceConfigs.Get(name)
 	if !ok {
@@ -159,6 +160,7 @@ func (p *Project) CreateService(name string) (Service, error) {
 }
 
 func (p *Project) load(file string, bytes []byte) error {
+	fmt.Printf("LoadFile \n")
 	config, err := config.Merge(p.ServiceConfigs, p.context.EnvironmentLookup, p.context.ResourceLookup, template.StackInfo{
 		Version:         p.context.Version,
 		PreviousVersion: p.context.PreviousVersion,
@@ -290,15 +292,24 @@ func (p *Project) startService(wrappers map[string]*serviceWrapper, history []st
 	if launched[wrapper.name] {
 		return nil
 	}
-
+	fmt.Printf("Entering startService %v \n", wrapper.name)
 	launched[wrapper.name] = true
 	history = append(history, wrapper.name)
 
+	fmt.Printf("Len of wrapper.service.dependentsvcs %v \n", len(wrapper.service.DependentServices()))
 	for _, dep := range wrapper.service.DependentServices() {
 		target := wrappers[dep.Target]
+		fmt.Printf("dep.Alias %v \n", dep.Alias)
+		fmt.Printf("dep.Target %v \n", dep.Target)
+		fmt.Printf("found target %v \n ", target)
+
+		// If Target belongs to another environment/region, return
+		if strings.Contains(dep.Target, "/") {
+			continue
+		}
 		if target == nil {
 			log.Debugf("Failed to find %s", dep.Target)
-			return fmt.Errorf("Service '%s' has a link to service '%s' which is undefined", wrapper.name, dep.Target)
+			return fmt.Errorf("Service HELLO '%s' has a link to service '%s' which is undefined", wrapper.name, dep.Target)
 		}
 
 		if utils.Contains(history, dep.Target) {

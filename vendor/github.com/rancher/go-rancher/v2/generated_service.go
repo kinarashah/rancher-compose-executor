@@ -1,5 +1,10 @@
 package client
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 const (
 	SERVICE_TYPE = "service"
 )
@@ -279,8 +284,14 @@ func (c *ServiceClient) ActionSetservicelinks(resource *Service, input *SetServi
 
 	resp := &Service{}
 
-	err := c.rancherClient.doAction(SERVICE_TYPE, "setservicelinks", &resource.Resource, input, resp)
+	ans, _ := json.Marshal(input)
+	fmt.Printf("%v", string(ans))
 
+	err := c.rancherClient.doAction(SERVICE_TYPE, "setservicelinks", &resource.Resource, input, resp)
+	// fmt.Printf(err.Error())
+	if err != nil {
+		fmt.Printf("returning my error \n")
+	}
 	return resp, err
 }
 

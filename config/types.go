@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"sync"
 
 	legacyClient "github.com/rancher/go-rancher/client"
@@ -358,6 +359,7 @@ func (c *ServiceConfigs) Has(name string) bool {
 func (c *ServiceConfigs) Get(name string) (*ServiceConfig, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
+	fmt.Printf("locking %v \n", name)
 	service, ok := c.m[name]
 	return service, ok
 }
