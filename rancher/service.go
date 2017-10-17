@@ -321,6 +321,7 @@ func (r *RancherService) getServiceLinks() ([]client.ServiceLink, error) {
 	}
 
 	result := []client.ServiceLink{}
+	logrus.Infof("HELLO \n %v length of links ", len(links))
 	for link, id := range links {
 		if strings.Contains(link.ServiceName, "/") {
 			result = append(result, client.ServiceLink{
