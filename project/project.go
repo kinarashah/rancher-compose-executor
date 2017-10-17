@@ -304,9 +304,9 @@ func (p *Project) startService(wrappers map[string]*serviceWrapper, history []st
 		fmt.Printf("found target %v \n ", target)
 
 		// If Target belongs to another environment/region, return
-		if strings.Contains(dep.Target, "/") {
-			continue
-		}
+		// if strings.Contains(dep.Target, "/") {
+		// 	continue
+		// }
 		if target == nil {
 			log.Debugf("Failed to find %s", dep.Target)
 			return fmt.Errorf("Service HELLO '%s' has a link to service '%s' which is undefined", wrapper.name, dep.Target)

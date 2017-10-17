@@ -296,9 +296,9 @@ func (r *RancherService) setupLinks(service *client.Service, update bool) error 
 
 	links, err := r.getServiceLinks()
 	for _, link := range links {
-		fmt.Printf("Linkname %v ", link.Name)
-		fmt.Printf("LinkSvcId %v", link.ServiceId)
-		fmt.Printf("LinkSvc %v", link.Service)
+		fmt.Printf("Linkname %v \n", link.Name)
+		fmt.Printf("LinkSvcId %v \n", link.ServiceId)
+		fmt.Printf("LinkSvc %v \n", link.Service)
 	}
 	_, err = r.context.Client.Service.ActionSetservicelinks(service, &client.SetServiceLinksInput{
 		ServiceLinks: links,
@@ -324,10 +324,10 @@ func (r *RancherService) getServiceLinks() ([]client.ServiceLink, error) {
 	logrus.Infof("HELLO \n %v length of links ", len(links))
 	for link, id := range links {
 		if strings.Contains(link.ServiceName, "/") {
-			result = append(result, client.ServiceLink{
-				Name:    link.Alias,
-				Service: link.ServiceName,
-			})
+			// result = append(result, client.ServiceLink{
+			// 	Name:    link.Alias,
+			// 	Service: link.ServiceName,
+			// })
 		} else {
 			result = append(result, client.ServiceLink{
 				Name:      link.Alias,
